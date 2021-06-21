@@ -42,6 +42,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         dayCalories = 0
         yesterdayCalories = 0
         weekCalories = 0
+        weekInfo = {
+            'sunday'    : 0,
+            'monday'    : 0,
+            'tuesday'   : 0,
+            'wednesday' : 0,
+            'thursday'  : 0,
+            'friday'    : 0,
+            'saturday'  : 0
+        }
 
         
         for item in data:
@@ -74,6 +83,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             if item['date'].date() == datetime.datetime.now().date(): dayCalories += kcal
             if item['date'].date() == (datetime.datetime.now() - datetime.timedelta(days=1)).date(): yesterdayCalories += kcal
             if item['date'].date() > (datetime.datetime.now() - datetime.timedelta(days=7)).date(): weekCalories += kcal
+            if item['date'].weekday() == 0: weekInfo['monday'] += kcal
+            if item['date'].weekday() == 1: weekInfo['tuesday'] += kcal
+            if item['date'].weekday() == 2: weekInfo['wednesday'] += kcal
+            if item['date'].weekday() == 3: weekInfo['thursday'] += kcal
+            if item['date'].weekday() == 4: weekInfo['friday'] += kcal
+            if item['date'].weekday() == 5: weekInfo['saturday'] += kcal
+            if item['date'].weekday() == 6: weekInfo['sunday'] += kcal
+
+
 
         caloriesPercent = round((dayCalories/2500)*100,2) if dayCalories > 0 else 0
         weekCalories = round(weekCalories/len(data)) if len(data) > 0 else 0
@@ -98,7 +116,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             "averageWeek": {
                 "value": f'{weekCalories} Kcal',
                 "label": 'Média semana'
-            }
+            },
+            "weekInfo" : weekInfo
         }
         
         response = {
